@@ -58,14 +58,14 @@ export default function ScanPage() {
   const isMultipleScans = totalScans > 2;
 
   return (
-    <div className="min-h-screen bg-dark-950 p-6">
+    <div className="min-h-screen bg-dark-950 p-4 sm:p-6 pt-16 lg:pt-6">
       <div className="max-w-7xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2">Scan Security Seal</h1>
-          <p className="text-gray-400">Scan QR code or barcode to view shipment details</p>
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">Scan Security Seal</h1>
+          <p className="text-gray-400 text-sm sm:text-base">Scan QR code or barcode to view shipment details</p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
           {/* Scanner Section */}
           <div>
             <QRScanner onScanSuccess={handleScanSuccess} />

@@ -4,11 +4,11 @@ import { Settings as SettingsIcon, Bell, Lock, Database, Globe } from 'lucide-re
 
 export default function SettingsPage() {
   return (
-    <div className="min-h-screen bg-dark-950 p-6">
+    <div className="min-h-screen bg-dark-950 p-4 sm:p-6 pt-16 lg:pt-6">
       <div className="max-w-4xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2">Settings</h1>
-          <p className="text-gray-400">Manage system configuration and preferences</p>
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">Settings</h1>
+          <p className="text-gray-400 text-sm sm:text-base">Manage system configuration and preferences</p>
         </div>
 
         <div className="space-y-6">

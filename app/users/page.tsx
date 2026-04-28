@@ -44,68 +44,69 @@ export default function UsersPage() {
   };
 
   return (
-    <div className="min-h-screen bg-dark-950 p-6">
+    <div className="min-h-screen bg-dark-950 p-4 sm:p-6 pt-16 lg:pt-6">
       <div className="max-w-7xl mx-auto">
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 sm:mb-8 gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-white mb-2">Users</h1>
-            <p className="text-gray-400">Manage system users and permissions</p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">Users</h1>
+            <p className="text-gray-400 text-sm sm:text-base">Manage system users and permissions</p>
           </div>
 
-          <button className="btn-primary flex items-center space-x-2">
-            <Plus className="w-5 h-5" />
+          <button className="btn-primary flex items-center justify-center space-x-2 w-full sm:w-auto">
+            <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
             <span>Add User</span>
           </button>
         </div>
 
-        <div className="card mb-6">
+        <div className="card mb-4 sm:mb-6">
           <div className="relative">
-            <Search className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
+            <Search className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
             <input
               type="text"
-              placeholder="Search users by name or email..."
-              className="input-field w-full pl-10"
+              placeholder="Search users..."
+              className="input-field w-full pl-9 sm:pl-10 text-sm sm:text-base"
             />
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <div className="grid grid-cols-3 gap-3 sm:gap-6 mb-4 sm:mb-6">
           <div className="card">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
               <div>
-                <p className="text-gray-400 text-sm mb-1">Total Users</p>
-                <p className="text-2xl font-bold text-white">{users.length}</p>
+                <p className="text-gray-400 text-xs sm:text-sm mb-1">Total</p>
+                <p className="text-xl sm:text-2xl font-bold text-white">{users.length}</p>
               </div>
-              <UsersIcon className="w-8 h-8 text-primary-500" />
+              <UsersIcon className="w-6 h-6 sm:w-8 sm:h-8 text-primary-500" />
             </div>
           </div>
 
           <div className="card">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
               <div>
-                <p className="text-gray-400 text-sm mb-1">Admins</p>
-                <p className="text-2xl font-bold text-white">
+                <p className="text-gray-400 text-xs sm:text-sm mb-1">Admins</p>
+                <p className="text-xl sm:text-2xl font-bold text-white">
                   {users.filter(u => u.role === 'admin').length}
                 </p>
               </div>
-              <Shield className="w-8 h-8 text-red-500" />
+              <Shield className="w-6 h-6 sm:w-8 sm:h-8 text-red-500" />
             </div>
           </div>
 
           <div className="card">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
               <div>
-                <p className="text-gray-400 text-sm mb-1">Operators</p>
-                <p className="text-2xl font-bold text-white">
+                <p className="text-gray-400 text-xs sm:text-sm mb-1">Operators</p>
+                <p className="text-xl sm:text-2xl font-bold text-white">
                   {users.filter(u => u.role === 'operator').length}
                 </p>
               </div>
-              <UsersIcon className="w-8 h-8 text-blue-500" />
+              <UsersIcon className="w-6 h-6 sm:w-8 sm:h-8 text-blue-500" />
             </div>
           </div>
         </div>
 
-        <div className="card">
+        {/* Desktop Table */}
+        <div className="card hidden md:block">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
@@ -168,6 +169,53 @@ export default function UsersPage() {
               </tbody>
             </table>
           </div>
+        </div>
+
+        {/* Mobile Cards */}
+        <div className="md:hidden space-y-3">
+          {users.map((user) => (
+            <div key={user.id} className="card">
+              <div className="flex items-start justify-between mb-3">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-primary-600 rounded-full flex items-center justify-center">
+                    <span className="text-white font-semibold text-sm">
+                      {user.name.charAt(0)}
+                    </span>
+                  </div>
+                  <div>
+                    <p className="text-white font-medium text-sm">{user.name}</p>
+                    <div className="flex items-center space-x-1 text-gray-400 text-xs mt-1">
+                      <Mail className="w-3 h-3" />
+                      <span>{user.email}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between pt-3 border-t border-dark-700">
+                <div className="flex items-center space-x-2">
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium border uppercase ${getRoleBadge(user.role)}`}>
+                    {user.role}
+                  </span>
+                  <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-600/20 text-green-400 border border-green-600">
+                    {user.status}
+                  </span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <button className="text-primary-500 hover:text-primary-400 text-xs">
+                    Edit
+                  </button>
+                  <button className="text-red-500 hover:text-red-400 text-xs">
+                    Delete
+                  </button>
+                </div>
+              </div>
+
+              <div className="text-gray-400 text-xs mt-2">
+                Created: {user.created_at}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>

@@ -47,88 +47,88 @@ export default function SealsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-dark-950 p-6">
+    <div className="min-h-screen bg-dark-950 p-4 sm:p-6 pt-16 lg:pt-6">
       <div className="max-w-7xl mx-auto">
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 sm:mb-8 gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-white mb-2">Security Seals</h1>
-            <p className="text-gray-400">Manage QR codes and barcodes</p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">Security Seals</h1>
+            <p className="text-gray-400 text-sm sm:text-base">Manage QR codes and barcodes</p>
           </div>
 
           <div className="flex items-center space-x-3">
-            <button className="btn-secondary flex items-center space-x-2">
-              <Download className="w-5 h-5" />
-              <span>Export</span>
+            <button className="btn-secondary flex items-center space-x-2 flex-1 sm:flex-initial justify-center">
+              <Download className="w-4 h-4 sm:w-5 sm:h-5" />
+              <span className="text-sm sm:text-base">Export</span>
             </button>
-            <button className="btn-primary flex items-center space-x-2">
-              <Plus className="w-5 h-5" />
-              <span>Generate Seal</span>
+            <button className="btn-primary flex items-center space-x-2 flex-1 sm:flex-initial justify-center">
+              <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
+              <span className="text-sm sm:text-base">Generate</span>
             </button>
           </div>
         </div>
 
-        <div className="card mb-6">
+        <div className="card mb-4 sm:mb-6">
           <div className="relative">
-            <Search className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
+            <Search className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
             <input
               type="text"
               placeholder="Search by seal code..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="input-field w-full pl-10"
+              className="input-field w-full pl-9 sm:pl-10 text-sm sm:text-base"
             />
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-4 sm:mb-6">
           <div className="card">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
               <div>
-                <p className="text-gray-400 text-sm mb-1">Total Seals</p>
-                <p className="text-2xl font-bold text-white">{seals.length}</p>
+                <p className="text-gray-400 text-xs sm:text-sm mb-1">Total</p>
+                <p className="text-xl sm:text-2xl font-bold text-white">{seals.length}</p>
               </div>
-              <Shield className="w-8 h-8 text-primary-500" />
+              <Shield className="w-6 h-6 sm:w-8 sm:h-8 text-primary-500" />
             </div>
           </div>
 
           <div className="card">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
               <div>
-                <p className="text-gray-400 text-sm mb-1">Active</p>
-                <p className="text-2xl font-bold text-white">
+                <p className="text-gray-400 text-xs sm:text-sm mb-1">Active</p>
+                <p className="text-xl sm:text-2xl font-bold text-white">
                   {seals.filter(s => s.status === 'active').length}
                 </p>
               </div>
-              <Shield className="w-8 h-8 text-green-500" />
+              <Shield className="w-6 h-6 sm:w-8 sm:h-8 text-green-500" />
             </div>
           </div>
 
           <div className="card">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
               <div>
-                <p className="text-gray-400 text-sm mb-1">QR Codes</p>
-                <p className="text-2xl font-bold text-white">
+                <p className="text-gray-400 text-xs sm:text-sm mb-1">QR</p>
+                <p className="text-xl sm:text-2xl font-bold text-white">
                   {seals.filter(s => s.seal_type === 'qr').length}
                 </p>
               </div>
-              <QrCode className="w-8 h-8 text-blue-500" />
+              <QrCode className="w-6 h-6 sm:w-8 sm:h-8 text-blue-500" />
             </div>
           </div>
 
           <div className="card">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
               <div>
-                <p className="text-gray-400 text-sm mb-1">Barcodes</p>
-                <p className="text-2xl font-bold text-white">
+                <p className="text-gray-400 text-xs sm:text-sm mb-1">Barcode</p>
+                <p className="text-xl sm:text-2xl font-bold text-white">
                   {seals.filter(s => s.seal_type === 'barcode').length}
                 </p>
               </div>
-              <Barcode className="w-8 h-8 text-yellow-500" />
+              <Barcode className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-500" />
             </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {seals.map((seal) => (
             <div key={seal.id} className="card-hover">
               <div className="flex items-start justify-between mb-4">
