@@ -3,8 +3,9 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { Package, Scan, Shield, BarChart3, Settings, Users, Sun, Moon, X } from 'lucide-react';
+import { Package, Scan, Shield, BarChart3, Settings, Users, Sun, Moon, X, LogOut } from 'lucide-react';
 import { useTheme } from '@/components/ThemeProvider';
+import { useSession, signOut } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 
 interface SidebarProps {
@@ -15,6 +16,7 @@ interface SidebarProps {
 export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const pathname = usePathname();
   const { theme, toggleTheme } = useTheme();
+  const { data: session } = useSession();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -22,6 +24,10 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   }, []);
 
   const isLight = theme === 'light';
+
+  const handleLogout = async () => {
+    await signOut({ callbackUrl: '/login' });
+  };
 
   const navigation = [
     { name: 'Dashboard', href: '/', icon: BarChart3 },
@@ -172,19 +178,34 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 
       <div className="absolute bottom-4 left-4 right-4">
         <div className="card p-3">
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-3 mb-3">
             <div className="w-10 h-10 bg-primary-600 rounded-full flex items-center justify-center">
-              <span className="text-white font-semibold">A</span>
+              <span className="text-white font-semibold">
+                {session?.user?.name?.charAt(0) || 'U'}
+              </span>
             </div>
             <div className="flex-1">
               <p className={`text-sm font-medium ${isLight ? 'text-gray-900' : 'text-white'}`}>
-                Admin User
+                {session?.user?.name || 'User'}
               </p>
               <p className={`text-xs ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
-                admin@logifast.com
+                {session?.user?.email || 'user@example.com'}
               </p>
             </div>
           </div>
+
+          {/* Logout Button */}
+          <button
+            onClick={handleLogout}
+            className={`w-full flex items-center justify-center space-x-2 px-3 py-2 rounded-lg transition-colors ${
+              isLight
+                ? 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                : 'bg-dark-800 hover:bg-dark-700 text-gray-300'
+            }`}
+          >
+            <LogOut className="w-4 h-4" />
+            <span className="text-sm">Logout</span>
+          </button>
         </div>
       </div>
     </aside>
