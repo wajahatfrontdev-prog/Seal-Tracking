@@ -1,0 +1,96 @@
+// Prisma Schema for Seal Tracking System
+// Database: Neon Postgres
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// User Model - For authentication and tracking who did what
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String   // Hashed with bcrypt
+  role      String   @default("operator") // admin, operator, viewer
+  status    String   @default("active")   // active, inactive
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  scans     Scan[]
+  createdSeals     Seal[]     @relation("SealCreator")
+  createdShipments Shipment[] @relation("ShipmentCreator")
+
+  @@map("users")
+}
+
+// Seal Model - QR codes and barcodes
+model Seal {
+  id        String   @id @default(uuid())
+  sealCode  String   @unique
+  sealType  String   // qr, barcode
+  status    String   @default("active") // active, inactive, compromised
+  createdAt DateTime @default(now())
+  createdBy String
+
+  // Relations
+  creator   User       @relation("SealCreator", fields: [createdBy], references: [id])
+  shipments Shipment[]
+  scans     Scan[]
+
+  @@index([sealCode])
+  @@index([status])
+  @@map("seals")
+}
+
+// Shipment Model - Truck deliveries with products
+model Shipment {
+  id                 String   @id @default(uuid())
+  sealId             String
+  truckId            String
+  productName        String
+  productDescription String?
+  quantity           Int
+  unit               String   @default("bags") // bags, kg, tons, etc.
+  origin             String
+  destination        String
+  status             String   @default("pending") // pending, in-transit, delivered
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  createdBy          String
+
+  // Relations
+  seal    Seal   @relation(fields: [sealId], references: [id], onDelete: Cascade)
+  creator User   @relation("ShipmentCreator", fields: [createdBy], references: [id])
+  scans   Scan[]
+
+  @@index([sealId])
+  @@index([status])
+  @@index([truckId])
+  @@map("shipments")
+}
+
+// Scan Model - Track every time a seal is scanned
+model Scan {
+  id         String   @id @default(uuid())
+  sealId     String
+  shipmentId String?
+  scannedBy  String
+  scannedAt  DateTime @default(now())
+  location   String?
+  deviceInfo String?
+  ipAddress  String?
+
+  // Relations
+  seal     Seal      @relation(fields: [sealId], references: [id], onDelete: Cascade)
+  shipment Shipment? @relation(fields: [shipmentId], references: [id], onDelete: SetNull)
+  user     User      @relation(fields: [scannedBy], references: [id])
+
+  @@index([sealId])
+  @@index([scannedAt])
+  @@map("scans")
+}

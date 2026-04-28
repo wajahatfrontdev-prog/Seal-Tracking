@@ -1,32 +1,18 @@
-// Example API Route for Seals
-// Install Prisma first: npm install @prisma/client && npx prisma init
-
+// Seals API Route - Connected to Database
 import { NextRequest, NextResponse } from 'next/server';
-// import { prisma } from '@/lib/prisma';
+import { prisma } from '@/lib/prisma';
 
 // GET /api/seals - Get all seals
 export async function GET() {
   try {
-    // Uncomment when database is setup
-    // const seals = await prisma.seal.findMany({
-    //   include: {
-    //     creator: {
-    //       select: { name: true, email: true }
-    //     }
-    //   },
-    //   orderBy: { createdAt: 'desc' }
-    // });
-
-    // Mock data for now
-    const seals = [
-      {
-        id: '1',
-        sealCode: 'QR-2024-001',
-        sealType: 'QR',
-        status: 'ACTIVE',
-        createdAt: new Date(),
-      }
-    ];
+    const seals = await prisma.seal.findMany({
+      include: {
+        creator: {
+          select: { name: true, email: true }
+        }
+      },
+      orderBy: { createdAt: 'desc' }
+    });
 
     return NextResponse.json(seals);
   } catch (error) {
@@ -46,26 +32,32 @@ export async function POST(request: NextRequest) {
     // Validate input
     if (!body.sealCode || !body.sealType) {
       return NextResponse.json(
-        { error: 'Missing required fields' },
+        { error: 'Missing required fields: sealCode, sealType' },
         { status: 400 }
       );
     }
 
-    // Uncomment when database is setup
-    // const seal = await prisma.seal.create({
-    //   data: {
-    //     sealCode: body.sealCode,
-    //     sealType: body.sealType,
-    //     createdBy: body.userId, // Get from session
-    //   }
-    // });
+    // Check if seal code already exists
+    const existingSeal = await prisma.seal.findUnique({
+      where: { sealCode: body.sealCode }
+    });
 
-    // Mock response
-    const seal = {
-      id: Math.random().toString(),
-      ...body,
-      createdAt: new Date(),
-    };
+    if (existingSeal) {
+      return NextResponse.json(
+        { error: 'Seal code already exists' },
+        { status: 409 }
+      );
+    }
+
+    // Create seal
+    const seal = await prisma.seal.create({
+      data: {
+        sealCode: body.sealCode,
+        sealType: body.sealType,
+        status: body.status || 'active',
+        createdBy: body.userId || 'admin-user-id', // TODO: Get from session
+      }
+    });
 
     return NextResponse.json(seal, { status: 201 });
   } catch (error) {
