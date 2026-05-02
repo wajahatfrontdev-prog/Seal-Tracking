@@ -1,0 +1,40 @@
+# Vercel
+.vercel
+
+# Dependencies
+node_modules
+
+# Environment
+.env
+.env.local
+.env*.local
+
+# Build
+.next
+out
+dist
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode
+.idea
+
+# Git
+.git
+.gitignore
+
+# Testing
+coverage
+.nyc_output
+
+# Misc
+*.swp
+*.swo
+*~
