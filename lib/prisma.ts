@@ -1,28 +1,19 @@
-// Prisma Client Singleton with PostgreSQL Adapter
+// Prisma Client Singleton
 // This prevents multiple instances in development
 
 import { PrismaClient } from '@prisma/client';
-import { PrismaPg } from '@prisma/adapter-pg';
-import { Pool } from 'pg';
+import { PrismaNeon } from '@prisma/adapter-neon';
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
-  pool: Pool | undefined;
 };
 
-// Create connection pool (reuse in development)
-if (!globalForPrisma.pool) {
-  globalForPrisma.pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-  });
-}
+// Create Neon adapter with connection string
+const adapter = new PrismaNeon({
+  connectionString: process.env.DATABASE_URL!
+});
 
-const pool = globalForPrisma.pool;
-
-// Create Prisma adapter
-const adapter = new PrismaPg(pool);
-
-// Create Prisma Client with adapter
+// Create Prisma Client with Neon adapter
 export const prisma = globalForPrisma.prisma ?? new PrismaClient({
   adapter,
   log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
