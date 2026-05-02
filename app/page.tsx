@@ -1,9 +1,20 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import { Package, Truck } from 'lucide-react';
 
 export default function Home() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/login');
+    }
+  }, [status, router]);
   const [stats, setStats] = useState({
     totalShipments: 0,
     inTransit: 0,
