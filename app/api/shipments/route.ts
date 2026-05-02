@@ -1,6 +1,7 @@
 // Shipments API Route - Connected to Database
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { auth } from '@/lib/auth';
 
 // GET /api/shipments - Get all shipments
 export async function GET(request: NextRequest) {
@@ -32,6 +33,15 @@ export async function GET(request: NextRequest) {
 // POST /api/shipments - Create new shipment
 export async function POST(request: NextRequest) {
   try {
+    const session = await auth();
+
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
     const body = await request.json();
 
     // Validate required fields
@@ -69,7 +79,7 @@ export async function POST(request: NextRequest) {
         origin: body.origin,
         destination: body.destination,
         status: body.status || 'pending',
-        createdBy: body.userId || 'admin-user-id', // TODO: Get from session
+        createdBy: session.user.id,
       },
       include: {
         seal: true

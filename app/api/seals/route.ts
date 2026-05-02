@@ -1,6 +1,7 @@
 // Seals API Route - Connected to Database
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { auth } from '@/lib/auth';
 
 // GET /api/seals - Get all seals
 export async function GET() {
@@ -27,6 +28,15 @@ export async function GET() {
 // POST /api/seals - Create new seal
 export async function POST(request: NextRequest) {
   try {
+    const session = await auth();
+
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
     const body = await request.json();
 
     // Validate input
@@ -55,7 +65,7 @@ export async function POST(request: NextRequest) {
         sealCode: body.sealCode,
         sealType: body.sealType,
         status: body.status || 'active',
-        createdBy: body.userId || 'admin-user-id', // TODO: Get from session
+        createdBy: session.user.id,
       }
     });
 

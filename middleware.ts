@@ -1,32 +1,34 @@
-// Middleware for Route Protection
-import { auth } from '@/lib/auth';
 import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 
-export default auth((req) => {
-  const isLoggedIn = !!req.auth;
-  const isLoginPage = req.nextUrl.pathname === '/login';
+export function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
 
-  // If user is logged in and trying to access login page, redirect to home
-  if (isLoggedIn && isLoginPage) {
-    return NextResponse.redirect(new URL('/', req.url));
+  // Get session token from cookies
+  const sessionToken = request.cookies.get('authjs.session-token') ||
+                       request.cookies.get('__Secure-authjs.session-token');
+
+  // Public routes that don't require authentication
+  const publicRoutes = ['/login', '/register'];
+  const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route));
+
+  // If no session and trying to access protected route
+  if (!sessionToken && !isPublicRoute) {
+    const loginUrl = new URL('/login', request.url);
+    loginUrl.searchParams.set('callbackUrl', pathname);
+    return NextResponse.redirect(loginUrl);
   }
 
-  // If user is not logged in and trying to access protected routes, redirect to login
-  if (!isLoggedIn && !isLoginPage) {
-    return NextResponse.redirect(new URL('/login', req.url));
+  // If has session and trying to access login/register
+  if (sessionToken && isPublicRoute) {
+    return NextResponse.redirect(new URL('/', request.url));
   }
 
   return NextResponse.next();
-});
+}
 
-// Configure which routes to protect
 export const config = {
   matcher: [
-    '/',
-    '/scan',
-    '/shipments',
-    '/seals',
-    '/users',
-    '/settings',
+    '/((?!_next/static|_next/image|favicon.ico|.*\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 };

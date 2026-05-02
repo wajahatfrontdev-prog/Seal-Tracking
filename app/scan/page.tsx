@@ -3,55 +3,72 @@
 import { useState } from 'react';
 import QRScanner from '@/components/QRScanner';
 import { Package, Truck, MapPin, Calendar, User, AlertCircle } from 'lucide-react';
+import { useToast } from '@/components/ToastContext';
 
 export default function ScanPage() {
   const [scannedData, setScannedData] = useState<any>(null);
   const [scanHistory, setScanHistory] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const { showToast } = useToast();
 
   const handleScanSuccess = async (decodedText: string, decodedResult: any) => {
     setLoading(true);
 
-    // Simulate API call to fetch seal/shipment data
-    setTimeout(() => {
-      const mockData = {
+    try {
+      // Call API to record scan and get seal/shipment data
+      const response = await fetch('/api/scans', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          sealCode: decodedText,
+          location: 'Scanned via Web App',
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        showToast('error', error.error || 'Failed to scan seal');
+        setLoading(false);
+        return;
+      }
+
+      const data = await response.json();
+
+      // Transform API response to match UI expectations
+      const transformedData = {
         seal: {
-          seal_code: decodedText,
-          status: 'active',
-          created_at: '2026-04-20',
+          seal_code: data.seal.sealCode,
+          status: data.seal.status,
+          created_at: new Date(data.seal.createdAt).toLocaleDateString(),
         },
-        shipment: {
-          id: 'SHP-' + Math.random().toString(36).substr(2, 9).toUpperCase(),
-          truck_id: 'DEZ-' + Math.floor(Math.random() * 1000),
-          product_name: 'Cotton Bales',
-          product_description: 'Premium quality cotton bales',
-          quantity: Math.floor(Math.random() * 100) + 50,
-          unit: 'bags',
-          origin: 'Karachi Warehouse',
-          destination: 'Lahore Distribution Center',
-          status: 'in-transit',
-        },
-        scans: [
-          {
-            scanned_at: new Date().toISOString(),
-            scanned_by: 'Current User',
-            location: 'Checkpoint A',
-          },
-          {
-            scanned_at: new Date(Date.now() - 86400000).toISOString(),
-            scanned_by: 'Operator 1',
-            location: 'Origin Warehouse',
-          },
-        ],
+        shipment: data.shipment ? {
+          id: data.shipment.id,
+          truck_id: data.shipment.truckId,
+          product_name: data.shipment.productName,
+          product_description: data.shipment.productDescription,
+          quantity: data.shipment.quantity,
+          unit: data.shipment.unit,
+          origin: data.shipment.origin,
+          destination: data.shipment.destination,
+          status: data.shipment.status,
+        } : null,
+        scans: data.scans,
       };
 
-      setScannedData(mockData);
+      setScannedData(transformedData);
       setScanHistory(prev => [
-        { code: decodedText, timestamp: new Date(), ...mockData },
+        { code: decodedText, timestamp: new Date(), ...transformedData },
         ...prev.slice(0, 4)
       ]);
+      showToast('success', 'Seal scanned successfully!');
       setLoading(false);
-    }, 1000);
+    } catch (error) {
+      console.error('Error scanning seal:', error);
+      showToast('error', 'Failed to scan seal. Please try again.');
+      setLoading(false);
+    }
   };
 
   const totalScans = scannedData?.scans?.length || 0;
@@ -182,10 +199,10 @@ export default function ScanPage() {
                           <User className="w-4 h-4 text-primary-500" />
                         </div>
                         <div className="flex-1">
-                          <p className="text-white text-sm font-medium">{scan.scanned_by}</p>
-                          <p className="text-gray-400 text-xs">{scan.location}</p>
+                          <p className="text-white text-sm font-medium">{scan.scannedBy}</p>
+                          <p className="text-gray-400 text-xs">{scan.location || 'Unknown location'}</p>
                           <p className="text-gray-500 text-xs mt-1">
-                            {new Date(scan.scanned_at).toLocaleString()}
+                            {new Date(scan.scannedAt).toLocaleString()}
                           </p>
                         </div>
                       </div>

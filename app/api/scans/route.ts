@@ -1,6 +1,7 @@
 // Scans API Route - Connected to Database
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { auth } from '@/lib/auth';
 
 // POST /api/scans - Record a new scan
 export async function POST(request: NextRequest) {
@@ -40,12 +41,22 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Get session for user ID
+    const session = await auth();
+
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
     // Record scan
     const scan = await prisma.scan.create({
       data: {
         sealId: seal.id,
         shipmentId: seal.shipments[0]?.id || null,
-        scannedBy: body.userId || 'admin-user-id', // TODO: Get from session
+        scannedBy: session.user.id,
         location: body.location,
         deviceInfo,
         ipAddress,
