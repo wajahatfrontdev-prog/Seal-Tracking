@@ -14,6 +14,8 @@ export default function QRScanner({ onScanSuccess }: QRScannerProps) {
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const [cameras, setCameras] = useState<any[]>([]);
   const [selectedCamera, setSelectedCamera] = useState<string>('');
+  const lastScannedRef = useRef<string>('');
+  const scanningRef = useRef<boolean>(false);
 
   useEffect(() => {
     Html5Qrcode.getCameras()
@@ -37,6 +39,8 @@ export default function QRScanner({ onScanSuccess }: QRScannerProps) {
   const startScanning = async () => {
     try {
       setError(null);
+      lastScannedRef.current = '';
+      scanningRef.current = false;
 
       if (!scannerRef.current) {
         scannerRef.current = new Html5Qrcode('qr-reader');
@@ -52,7 +56,22 @@ export default function QRScanner({ onScanSuccess }: QRScannerProps) {
         selectedCamera || { facingMode: 'environment' },
         config,
         (decodedText, decodedResult) => {
-          onScanSuccess(decodedText, decodedResult);
+          // Prevent multiple scans of the same code
+          if (scanningRef.current || lastScannedRef.current === decodedText) {
+            return;
+          }
+
+          scanningRef.current = true;
+          lastScannedRef.current = decodedText;
+
+          // Stop scanner after successful scan
+          stopScanning().then(() => {
+            onScanSuccess(decodedText, decodedResult);
+            // Reset after 2 seconds to allow rescanning
+            setTimeout(() => {
+              scanningRef.current = false;
+            }, 2000);
+          });
         },
         (errorMessage) => {
           // Ignore scanning errors
@@ -155,7 +174,7 @@ export default function QRScanner({ onScanSuccess }: QRScannerProps) {
 
       <div className="mt-4 p-3 bg-dark-800 rounded-lg">
         <p className="text-gray-400 text-xs">
-          <strong className="text-white">Tips:</strong> Ensure good lighting, hold steady, and keep the code within the scanning area.
+          <strong className="text-white">Tips:</strong> Ensure good lighting, hold steady, and keep the code within the scanning area. Scanner will stop automatically after successful scan.
         </p>
       </div>
     </div>
