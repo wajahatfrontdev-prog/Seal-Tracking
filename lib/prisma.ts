@@ -1,9 +1,9 @@
 // Prisma Client Singleton
-// Prisma v7 with Neon serverless adapter
+// Prisma v7 with pg adapter (stable, works with Neon PostgreSQL)
 
 import { PrismaClient } from '@prisma/client';
-import { PrismaNeon } from '@prisma/adapter-neon';
-import { neon } from '@neondatabase/serverless';
+import { PrismaPg } from '@prisma/adapter-pg';
+import { Pool } from 'pg';
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
@@ -16,14 +16,22 @@ function createPrismaClient() {
     process.env.DATABASE_POSTGRES_URL;
 
   if (!connectionString) {
-    throw new Error('No database connection string found. Set DATABASE_URL environment variable.');
+    throw new Error('DATABASE_URL environment variable is not set');
   }
 
-  // Remove channel_binding parameter - not supported by Neon serverless driver
-  const cleanUrl = connectionString.replace(/[&?]channel_binding=[^&]*/g, '').replace(/\?&/, '?');
+  // Clean URL - remove unsupported params for pg driver
+  const cleanUrl = connectionString
+    .replace(/[&?]channel_binding=[^&]*/g, '')
+    .replace(/\?&/, '?')
+    .replace(/&&/g, '&');
 
-  const sql = neon(cleanUrl);
-  const adapter = new PrismaNeon(sql as any);
+  const pool = new Pool({
+    connectionString: cleanUrl,
+    ssl: cleanUrl.includes('sslmode=require') ? { rejectUnauthorized: false } : false,
+    max: 1, // Serverless: keep pool small
+  });
+
+  const adapter = new PrismaPg(pool);
 
   return new PrismaClient({
     adapter,
