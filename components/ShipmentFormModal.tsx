@@ -123,14 +123,15 @@ export default function ShipmentFormModal({ isOpen, onClose, onSuccess }: Shipme
             Truck/Vehicle ID *
           </label>
           <div className="relative">
-            <Truck className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
+            <Truck className="w-4 h-4 text-gray-400 absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none" />
             <input
               type="text"
               name="truckId"
               value={formData.truckId}
               onChange={handleChange}
               placeholder="e.g., DEZ-389"
-              className="input-field w-full pl-10"
+              className="input-field w-full"
+              style={{ paddingRight: '2.5rem' }}
               required
             />
           </div>
@@ -142,14 +143,15 @@ export default function ShipmentFormModal({ isOpen, onClose, onSuccess }: Shipme
             Product Name *
           </label>
           <div className="relative">
-            <Package className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
+            <Package className="w-4 h-4 text-gray-400 absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none" />
             <input
               type="text"
               name="productName"
               value={formData.productName}
               onChange={handleChange}
               placeholder="e.g., Cotton Bales"
-              className="input-field w-full pl-10"
+              className="input-field w-full"
+              style={{ paddingRight: '2.5rem' }}
               required
             />
           </div>
@@ -213,14 +215,15 @@ export default function ShipmentFormModal({ isOpen, onClose, onSuccess }: Shipme
             Origin *
           </label>
           <div className="relative">
-            <MapPin className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
+            <MapPin className="w-4 h-4 text-gray-400 absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none" />
             <input
               type="text"
               name="origin"
               value={formData.origin}
               onChange={handleChange}
               placeholder="e.g., Karachi Warehouse"
-              className="input-field w-full pl-10"
+              className="input-field w-full"
+              style={{ paddingRight: '2.5rem' }}
               required
             />
           </div>
@@ -232,14 +235,15 @@ export default function ShipmentFormModal({ isOpen, onClose, onSuccess }: Shipme
             Destination *
           </label>
           <div className="relative">
-            <MapPin className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
+            <MapPin className="w-4 h-4 text-gray-400 absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none" />
             <input
               type="text"
               name="destination"
               value={formData.destination}
               onChange={handleChange}
               placeholder="e.g., Lahore Distribution Center"
-              className="input-field w-full pl-10"
+              className="input-field w-full"
+              style={{ paddingRight: '2.5rem' }}
               required
             />
           </div>
