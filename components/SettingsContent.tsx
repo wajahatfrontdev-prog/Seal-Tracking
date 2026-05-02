@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { User, Lock, Bell, Moon, Sun, Save } from 'lucide-react';
 import { useTheme } from '@/components/ThemeProvider';
-import { useToast } from '@/components/ToastProvider';
+import { useToast } from '@/components/ToastContext';
 
 export default function SettingsContent() {
   const { theme, toggleTheme } = useTheme();
@@ -49,7 +49,7 @@ export default function SettingsContent() {
       }
     } catch (error) {
       console.error('Error fetching settings:', error);
-      showToast('Failed to load settings', 'error');
+      showToast('error', 'Failed to load settings');
     } finally {
       setLoading(false);
     }
@@ -76,13 +76,13 @@ export default function SettingsContent() {
       const data = await response.json();
 
       if (response.ok) {
-        showToast('Profile updated successfully', 'success');
+        showToast('success', 'Profile updated successfully');
       } else {
-        showToast(data.error || 'Failed to update profile', 'error');
+        showToast('error', data.error || 'Failed to update profile');
       }
     } catch (error) {
       console.error('Error updating profile:', error);
-      showToast('Failed to update profile', 'error');
+      showToast('error', 'Failed to update profile');
     } finally {
       setSaving(false);
     }
@@ -90,17 +90,17 @@ export default function SettingsContent() {
 
   const handleChangePassword = async () => {
     if (!currentPassword || !newPassword) {
-      showToast('Please fill in all password fields', 'error');
+      showToast('error', 'Please fill in all password fields');
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      showToast('New passwords do not match', 'error');
+      showToast('error', 'New passwords do not match');
       return;
     }
 
     if (newPassword.length < 6) {
-      showToast('Password must be at least 6 characters', 'error');
+      showToast('error', 'Password must be at least 6 characters');
       return;
     }
 
@@ -118,16 +118,16 @@ export default function SettingsContent() {
       const data = await response.json();
 
       if (response.ok) {
-        showToast('Password changed successfully', 'success');
+        showToast('success', 'Password changed successfully');
         setCurrentPassword('');
         setNewPassword('');
         setConfirmPassword('');
       } else {
-        showToast(data.error || 'Failed to change password', 'error');
+        showToast('error', data.error || 'Failed to change password');
       }
     } catch (error) {
       console.error('Error changing password:', error);
-      showToast('Failed to change password', 'error');
+      showToast('error', 'Failed to change password');
     } finally {
       setSaving(false);
     }
