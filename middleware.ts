@@ -4,6 +4,11 @@ import type { NextRequest } from 'next/server';
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  // Skip middleware for API routes and NextAuth routes
+  if (pathname.startsWith('/api/')) {
+    return NextResponse.next();
+  }
+
   // Get session token from cookies
   const sessionToken = request.cookies.get('authjs.session-token') ||
                        request.cookies.get('__Secure-authjs.session-token');
