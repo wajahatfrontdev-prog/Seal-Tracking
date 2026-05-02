@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Package, Truck } from 'lucide-react';
+import ShipmentFormModal from '@/components/ShipmentFormModal';
 
 export default function Home() {
   const { data: session, status } = useSession();
@@ -23,6 +24,7 @@ export default function Home() {
   });
   const [recentShipments, setRecentShipments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     fetchDashboardData();
@@ -79,7 +81,10 @@ export default function Home() {
               </svg>
               <span className="hidden sm:inline">Search</span>
             </button>
-            <button className="btn-primary text-sm sm:text-base">
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="btn-primary text-sm sm:text-base"
+            >
               <svg className="w-4 h-4 sm:w-5 sm:h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
               </svg>
@@ -88,6 +93,12 @@ export default function Home() {
             </button>
           </div>
         </div>
+
+        <ShipmentFormModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onSuccess={fetchDashboardData}
+        />
 
         {/* Stats Grid */}
         {loading ? (
