@@ -1,9 +1,8 @@
 // Prisma Client Singleton
-// Prisma v7 with pg adapter (stable, works with Neon PostgreSQL)
+// Prisma v7 with Neon adapter for serverless PostgreSQL
 
 import { PrismaClient } from '@prisma/client';
-import { PrismaPg } from '@prisma/adapter-pg';
-import { Pool } from 'pg';
+import { PrismaNeon } from '@prisma/adapter-neon';
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
@@ -19,19 +18,10 @@ function createPrismaClient() {
     throw new Error('DATABASE_URL environment variable is not set');
   }
 
-  // Clean URL - remove unsupported params for pg driver
-  const cleanUrl = connectionString
-    .replace(/[&?]channel_binding=[^&]*/g, '')
-    .replace(/\?&/, '?')
-    .replace(/&&/g, '&');
-
-  const pool = new Pool({
-    connectionString: cleanUrl,
-    ssl: cleanUrl.includes('sslmode=require') ? { rejectUnauthorized: false } : false,
-    max: 1, // Serverless: keep pool small
+  // Create Neon adapter with connection string
+  const adapter = new PrismaNeon({
+    connectionString,
   });
-
-  const adapter = new PrismaPg(pool);
 
   return new PrismaClient({
     adapter,
