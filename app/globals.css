@@ -112,8 +112,13 @@ body {
   border: 1px solid var(--color-dark-600);
   border-radius: 0.5rem;
   padding: 0.5rem 1rem;
-  color: #f3f4f6;
+  color: #ffffff;
   transition: all 0.2s;
+}
+
+.input-field::placeholder {
+  color: #6b7280;
+  opacity: 1;
 }
 
 .light .input-field {
@@ -122,9 +127,42 @@ body {
   color: #111827;
 }
 
+.light .input-field::placeholder {
+  color: #9ca3af;
+  opacity: 1;
+}
+
 .input-field:focus {
   outline: none;
   border-color: var(--color-primary-500);
+}
+
+/* Select dropdown styling */
+select.input-field {
+  color: #ffffff;
+}
+
+select.input-field option {
+  background-color: var(--color-dark-800);
+  color: #ffffff;
+}
+
+.light select.input-field {
+  color: #111827;
+}
+
+.light select.input-field option {
+  background-color: white;
+  color: #111827;
+}
+
+/* Textarea styling */
+textarea.input-field {
+  color: #ffffff;
+}
+
+.light textarea.input-field {
+  color: #111827;
 }
 
 /* Utility Classes for Theme */
