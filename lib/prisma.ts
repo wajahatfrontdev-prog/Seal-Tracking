@@ -10,8 +10,6 @@ const globalForPrisma = globalThis as unknown as {
 };
 
 function createPrismaClient() {
-  // Use pooler URL for runtime queries (Neon serverless driver)
-  // Fall back to DATABASE_POSTGRES_PRISMA_URL if DATABASE_URL is not set
   const connectionString =
     process.env.DATABASE_URL ||
     process.env.DATABASE_POSTGRES_PRISMA_URL ||
@@ -21,7 +19,10 @@ function createPrismaClient() {
     throw new Error('No database connection string found. Set DATABASE_URL environment variable.');
   }
 
-  const sql = neon(connectionString);
+  // Remove channel_binding parameter - not supported by Neon serverless driver
+  const cleanUrl = connectionString.replace(/[&?]channel_binding=[^&]*/g, '').replace(/\?&/, '?');
+
+  const sql = neon(cleanUrl);
   const adapter = new PrismaNeon(sql as any);
 
   return new PrismaClient({
