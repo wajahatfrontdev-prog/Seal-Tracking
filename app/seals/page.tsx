@@ -3,12 +3,15 @@
 import { useState, useEffect } from 'react';
 import { Plus, Search, Shield, QrCode, Barcode, Download } from 'lucide-react';
 import SealGenerationModal from '@/components/SealGenerationModal';
+import SealDetailModal from '@/components/SealDetailModal';
 
 export default function SealsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [seals, setSeals] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [selectedSeal, setSelectedSeal] = useState<any>(null);
 
   useEffect(() => {
     fetchSeals();
@@ -74,6 +77,11 @@ export default function SealsPage() {
     document.body.removeChild(link);
   };
 
+  const handleViewDetails = (seal: any) => {
+    setSelectedSeal(seal);
+    setIsDetailModalOpen(true);
+  };
+
   return (
     <div className="min-h-screen bg-dark-950 p-4 sm:p-6 pt-16 lg:pt-6">
       <div className="max-w-7xl mx-auto">
@@ -106,6 +114,12 @@ export default function SealsPage() {
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           onSuccess={fetchSeals}
+        />
+
+        <SealDetailModal
+          isOpen={isDetailModalOpen}
+          onClose={() => setIsDetailModalOpen(false)}
+          seal={selectedSeal}
         />
 
         <div className="card mb-4 sm:mb-6">
@@ -218,7 +232,10 @@ export default function SealsPage() {
                     </div>
 
                     <div className="mt-4 pt-4 border-t border-dark-700">
-                      <button className="text-primary-500 hover:text-primary-400 text-sm w-full text-center">
+                      <button
+                        onClick={() => handleViewDetails(seal)}
+                        className="text-primary-500 hover:text-primary-400 text-sm w-full text-center transition-colors"
+                      >
                         View Details
                       </button>
                     </div>
