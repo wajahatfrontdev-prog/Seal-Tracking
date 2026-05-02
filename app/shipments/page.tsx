@@ -115,7 +115,7 @@ export default function ShipmentsPage() {
         ) : (
           <>
             <div className="grid grid-cols-3 gap-3 sm:gap-6 mb-4 sm:mb-6">
-              <div className="card">
+              <div className="card hover:scale-105 transition-transform duration-300 animate-fade-in" style={{ animationDelay: '0.1s' }}>
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                   <div>
                     <p className="text-gray-400 text-xs sm:text-sm mb-1">Total</p>
@@ -125,7 +125,7 @@ export default function ShipmentsPage() {
                 </div>
               </div>
 
-              <div className="card">
+              <div className="card hover:scale-105 transition-transform duration-300 animate-fade-in" style={{ animationDelay: '0.2s' }}>
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                   <div>
                     <p className="text-gray-400 text-xs sm:text-sm mb-1">Transit</p>
@@ -137,7 +137,7 @@ export default function ShipmentsPage() {
                 </div>
               </div>
 
-              <div className="card">
+              <div className="card hover:scale-105 transition-transform duration-300 animate-fade-in" style={{ animationDelay: '0.3s' }}>
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                   <div>
                     <p className="text-gray-400 text-xs sm:text-sm mb-1">Done</p>
@@ -170,7 +170,8 @@ export default function ShipmentsPage() {
                 {filteredShipments.map((shipment) => (
                   <tr
                     key={shipment.id}
-                    className="border-b border-dark-800 hover:bg-dark-800 transition-colors cursor-pointer"
+                    className="border-b border-dark-800 hover:bg-dark-800 hover:scale-[1.01] transition-all duration-300 cursor-pointer animate-fade-in"
+                    style={{ animationDelay: `${0.4 + filteredShipments.indexOf(shipment) * 0.05}s` }}
                   >
                     <td className="py-4 px-4">
                       <span className="text-white font-semibold">{shipment.id.substring(0, 8)}</span>
@@ -225,8 +226,8 @@ export default function ShipmentsPage() {
                   <p className="text-gray-400">No shipments found</p>
                 </div>
               ) : (
-                filteredShipments.map((shipment) => (
-                  <div key={shipment.id} className="card">
+                filteredShipments.map((shipment, index) => (
+                  <div key={shipment.id} className="card hover:scale-[1.02] transition-transform duration-300 animate-slide-up" style={{ animationDelay: `${0.4 + index * 0.1}s` }}>
                     <div className="flex items-start justify-between mb-3">
                       <div>
                         <p className="text-white font-semibold text-sm">{shipment.id.substring(0, 8)}</p>
@@ -270,6 +271,38 @@ export default function ShipmentsPage() {
           </>
         )}
       </div>
+
+      <style jsx>{`
+        @keyframes fade-in {
+          from {
+            opacity: 0;
+            transform: translateY(-10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes slide-up {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .animate-fade-in {
+          animation: fade-in 0.6s ease-out both;
+        }
+
+        .animate-slide-up {
+          animation: slide-up 0.5s ease-out both;
+        }
+      `}</style>
     </div>
   );
 }

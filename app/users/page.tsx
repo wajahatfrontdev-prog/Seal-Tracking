@@ -1,34 +1,37 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { Users as UsersIcon, Plus, Search, Mail, Shield } from 'lucide-react';
+import UserFormModal from '@/components/UserFormModal';
 
 export default function UsersPage() {
-  const users = [
-    {
-      id: '1',
-      name: 'Admin User',
-      email: 'admin@logifast.com',
-      role: 'admin',
-      created_at: '2026-01-15',
-      status: 'active',
-    },
-    {
-      id: '2',
-      name: 'Operator 1',
-      email: 'operator1@logifast.com',
-      role: 'operator',
-      created_at: '2026-02-20',
-      status: 'active',
-    },
-    {
-      id: '3',
-      name: 'Viewer User',
-      email: 'viewer@logifast.com',
-      role: 'viewer',
-      created_at: '2026-03-10',
-      status: 'active',
-    },
-  ];
+  const [users, setUsers] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const fetchUsers = async () => {
+    try {
+      const response = await fetch('/api/users');
+      if (response.ok) {
+        const data = await response.json();
+        setUsers(data);
+      }
+    } catch (error) {
+      console.error('Error fetching users:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filteredUsers = users.filter(user =>
+    user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    user.email.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const getRoleBadge = (role: string) => {
     switch (role) {
@@ -52,11 +55,20 @@ export default function UsersPage() {
             <p className="text-gray-400 text-sm sm:text-base">Manage system users and permissions</p>
           </div>
 
-          <button className="btn-primary flex items-center justify-center space-x-2 w-full sm:w-auto">
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="btn-primary flex items-center justify-center space-x-2 w-full sm:w-auto"
+          >
             <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
             <span>Add User</span>
           </button>
         </div>
+
+        <UserFormModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onSuccess={fetchUsers}
+        />
 
         <div className="card mb-4 sm:mb-6">
           <div className="relative">
@@ -64,46 +76,54 @@ export default function UsersPage() {
             <input
               type="text"
               placeholder="Search users..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               className="input-field w-full pl-9 sm:pl-10 text-sm sm:text-base"
             />
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-3 sm:gap-6 mb-4 sm:mb-6">
-          <div className="card">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-              <div>
-                <p className="text-gray-400 text-xs sm:text-sm mb-1">Total</p>
-                <p className="text-xl sm:text-2xl font-bold text-white">{users.length}</p>
-              </div>
-              <UsersIcon className="w-6 h-6 sm:w-8 sm:h-8 text-primary-500" />
-            </div>
+        {loading ? (
+          <div className="flex items-center justify-center py-12">
+            <div className="w-16 h-16 border-4 border-primary-600 border-t-transparent rounded-full animate-spin"></div>
           </div>
+        ) : (
+          <>
+            <div className="grid grid-cols-3 gap-3 sm:gap-6 mb-4 sm:mb-6">
+              <div className="card hover:scale-105 transition-transform duration-300 animate-fade-in" style={{ animationDelay: '0.1s' }}>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                  <div>
+                    <p className="text-gray-400 text-xs sm:text-sm mb-1">Total</p>
+                    <p className="text-xl sm:text-2xl font-bold text-white">{filteredUsers.length}</p>
+                  </div>
+                  <UsersIcon className="w-6 h-6 sm:w-8 sm:h-8 text-primary-500" />
+                </div>
+              </div>
 
-          <div className="card">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-              <div>
-                <p className="text-gray-400 text-xs sm:text-sm mb-1">Admins</p>
-                <p className="text-xl sm:text-2xl font-bold text-white">
-                  {users.filter(u => u.role === 'admin').length}
-                </p>
+              <div className="card hover:scale-105 transition-transform duration-300 animate-fade-in" style={{ animationDelay: '0.2s' }}>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                  <div>
+                    <p className="text-gray-400 text-xs sm:text-sm mb-1">Admins</p>
+                    <p className="text-xl sm:text-2xl font-bold text-white">
+                      {filteredUsers.filter(u => u.role === 'admin').length}
+                    </p>
+                  </div>
+                  <Shield className="w-6 h-6 sm:w-8 sm:h-8 text-red-500" />
+                </div>
               </div>
-              <Shield className="w-6 h-6 sm:w-8 sm:h-8 text-red-500" />
-            </div>
-          </div>
 
-          <div className="card">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-              <div>
-                <p className="text-gray-400 text-xs sm:text-sm mb-1">Operators</p>
-                <p className="text-xl sm:text-2xl font-bold text-white">
-                  {users.filter(u => u.role === 'operator').length}
-                </p>
+              <div className="card hover:scale-105 transition-transform duration-300 animate-fade-in" style={{ animationDelay: '0.3s' }}>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                  <div>
+                    <p className="text-gray-400 text-xs sm:text-sm mb-1">Operators</p>
+                    <p className="text-xl sm:text-2xl font-bold text-white">
+                      {filteredUsers.filter(u => u.role === 'operator').length}
+                    </p>
+                  </div>
+                  <UsersIcon className="w-6 h-6 sm:w-8 sm:h-8 text-blue-500" />
+                </div>
               </div>
-              <UsersIcon className="w-6 h-6 sm:w-8 sm:h-8 text-blue-500" />
             </div>
-          </div>
-        </div>
 
         {/* Desktop Table */}
         <div className="card hidden md:block">
@@ -120,10 +140,11 @@ export default function UsersPage() {
                 </tr>
               </thead>
               <tbody>
-                {users.map((user) => (
+                {filteredUsers.map((user, index) => (
                   <tr
                     key={user.id}
-                    className="border-b border-dark-800 hover:bg-dark-800 transition-colors"
+                    className="border-b border-dark-800 hover:bg-dark-800 hover:scale-[1.01] transition-all duration-300 animate-fade-in"
+                    style={{ animationDelay: `${0.4 + index * 0.05}s` }}
                   >
                     <td className="py-4 px-4">
                       <div className="flex items-center space-x-3">
@@ -152,7 +173,7 @@ export default function UsersPage() {
                       </span>
                     </td>
                     <td className="py-4 px-4">
-                      <span className="text-gray-400">{user.created_at}</span>
+                      <span className="text-gray-400">{new Date(user.createdAt).toLocaleDateString()}</span>
                     </td>
                     <td className="py-4 px-4">
                       <div className="flex items-center space-x-2">
@@ -173,8 +194,8 @@ export default function UsersPage() {
 
         {/* Mobile Cards */}
         <div className="md:hidden space-y-3">
-          {users.map((user) => (
-            <div key={user.id} className="card">
+          {filteredUsers.map((user, index) => (
+            <div key={user.id} className="card hover:scale-[1.02] transition-transform duration-300 animate-slide-up" style={{ animationDelay: `${0.4 + index * 0.1}s` }}>
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center space-x-3">
                   <div className="w-10 h-10 bg-primary-600 rounded-full flex items-center justify-center">
@@ -212,12 +233,46 @@ export default function UsersPage() {
               </div>
 
               <div className="text-gray-400 text-xs mt-2">
-                Created: {user.created_at}
+                Created: {new Date(user.createdAt).toLocaleDateString()}
               </div>
             </div>
           ))}
         </div>
+          </>
+        )}
       </div>
+
+      <style jsx>{`
+        @keyframes fade-in {
+          from {
+            opacity: 0;
+            transform: translateY(-10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes slide-up {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .animate-fade-in {
+          animation: fade-in 0.6s ease-out both;
+        }
+
+        .animate-slide-up {
+          animation: slide-up 0.5s ease-out both;
+        }
+      `}</style>
     </div>
   );
 }

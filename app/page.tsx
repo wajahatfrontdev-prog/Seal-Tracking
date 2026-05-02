@@ -75,15 +75,9 @@ export default function Home() {
           </div>
 
           <div className="flex items-center space-x-3">
-            <button className="btn-secondary text-sm sm:text-base">
-              <svg className="w-4 h-4 sm:w-5 sm:h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-              <span className="hidden sm:inline">Search</span>
-            </button>
             <button
               onClick={() => setIsModalOpen(true)}
-              className="btn-primary text-sm sm:text-base"
+              className="btn-primary text-sm sm:text-base w-full sm:w-auto"
             >
               <svg className="w-4 h-4 sm:w-5 sm:h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -108,7 +102,7 @@ export default function Home() {
         ) : (
           <>
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-6 sm:mb-8">
-              <div className="card">
+              <div className="card hover:scale-105 transition-transform duration-300 animate-fade-in" style={{ animationDelay: '0.1s' }}>
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-gray-400 text-xs sm:text-sm mb-1">Total Shipments</p>
@@ -120,7 +114,7 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="card">
+              <div className="card hover:scale-105 transition-transform duration-300 animate-fade-in" style={{ animationDelay: '0.2s' }}>
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-gray-400 text-xs sm:text-sm mb-1">In Transit</p>
@@ -132,7 +126,7 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="card">
+              <div className="card hover:scale-105 transition-transform duration-300 animate-fade-in" style={{ animationDelay: '0.3s' }}>
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-gray-400 text-xs sm:text-sm mb-1">Delivered</p>
@@ -146,7 +140,7 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="card">
+              <div className="card hover:scale-105 transition-transform duration-300 animate-fade-in" style={{ animationDelay: '0.4s' }}>
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-gray-400 text-xs sm:text-sm mb-1">Active Seals</p>
@@ -162,10 +156,10 @@ export default function Home() {
             </div>
 
             {/* Recent Shipments */}
-            <div className="card">
+            <div className="card animate-fade-in" style={{ animationDelay: '0.5s' }}>
               <div className="flex items-center justify-between mb-4 sm:mb-6">
                 <h3 className="text-lg sm:text-xl font-semibold text-white">Recent Shipments</h3>
-                <a href="/shipments" className="text-primary-500 hover:text-primary-400 text-xs sm:text-sm">View All</a>
+                <a href="/shipments" className="text-primary-500 hover:text-primary-400 text-xs sm:text-sm transition-colors">View All</a>
               </div>
 
               {recentShipments.length === 0 ? (
@@ -175,8 +169,12 @@ export default function Home() {
                 </div>
               ) : (
                 <div className="space-y-3 sm:space-y-4">
-                  {recentShipments.map((shipment) => (
-                    <div key={shipment.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 bg-dark-800 rounded-lg hover:bg-dark-700 transition-colors cursor-pointer gap-3">
+                  {recentShipments.map((shipment, index) => (
+                    <div
+                      key={shipment.id}
+                      className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 bg-dark-800 rounded-lg hover:bg-dark-700 hover:scale-[1.02] transition-all duration-300 cursor-pointer gap-3 animate-slide-up"
+                      style={{ animationDelay: `${0.6 + index * 0.1}s` }}
+                    >
                       <div className="flex items-center space-x-3 sm:space-x-4">
                         <div className="w-10 h-10 sm:w-12 sm:h-12 bg-dark-700 rounded-lg flex items-center justify-center flex-shrink-0">
                           <Truck className="w-5 h-5 sm:w-6 sm:h-6 text-gray-400" />
@@ -208,6 +206,38 @@ export default function Home() {
           </>
         )}
       </div>
+
+      <style jsx>{`
+        @keyframes fade-in {
+          from {
+            opacity: 0;
+            transform: translateY(-10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes slide-up {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .animate-fade-in {
+          animation: fade-in 0.6s ease-out both;
+        }
+
+        .animate-slide-up {
+          animation: slide-up 0.5s ease-out both;
+        }
+      `}</style>
     </div>
   )
 }

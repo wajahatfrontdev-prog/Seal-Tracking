@@ -45,6 +45,35 @@ export default function SealsPage() {
     }
   };
 
+  const handleExport = () => {
+    // Convert seals data to CSV
+    const headers = ['Seal Code', 'Type', 'Status', 'Created At', 'Created By'];
+    const csvData = filteredSeals.map(seal => [
+      seal.sealCode,
+      seal.sealType,
+      seal.status,
+      new Date(seal.createdAt).toLocaleDateString(),
+      seal.creator?.name || 'Unknown'
+    ]);
+
+    // Create CSV content
+    const csvContent = [
+      headers.join(','),
+      ...csvData.map(row => row.join(','))
+    ].join('\n');
+
+    // Create blob and download
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `seals-export-${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="min-h-screen bg-dark-950 p-4 sm:p-6 pt-16 lg:pt-6">
       <div className="max-w-7xl mx-auto">
@@ -55,7 +84,11 @@ export default function SealsPage() {
           </div>
 
           <div className="flex items-center space-x-3">
-            <button className="btn-secondary flex items-center space-x-2 flex-1 sm:flex-initial justify-center">
+            <button
+              onClick={handleExport}
+              disabled={filteredSeals.length === 0}
+              className="btn-secondary flex items-center space-x-2 flex-1 sm:flex-initial justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+            >
               <Download className="w-4 h-4 sm:w-5 sm:h-5" />
               <span className="text-sm sm:text-base">Export</span>
             </button>
@@ -95,7 +128,7 @@ export default function SealsPage() {
         ) : (
           <>
             <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-4 sm:mb-6">
-              <div className="card">
+              <div className="card hover:scale-105 transition-transform duration-300 animate-fade-in" style={{ animationDelay: '0.1s' }}>
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                   <div>
                     <p className="text-gray-400 text-xs sm:text-sm mb-1">Total</p>
@@ -105,7 +138,7 @@ export default function SealsPage() {
                 </div>
               </div>
 
-              <div className="card">
+              <div className="card hover:scale-105 transition-transform duration-300 animate-fade-in" style={{ animationDelay: '0.2s' }}>
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                   <div>
                     <p className="text-gray-400 text-xs sm:text-sm mb-1">Active</p>
@@ -117,7 +150,7 @@ export default function SealsPage() {
                 </div>
               </div>
 
-              <div className="card">
+              <div className="card hover:scale-105 transition-transform duration-300 animate-fade-in" style={{ animationDelay: '0.3s' }}>
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                   <div>
                     <p className="text-gray-400 text-xs sm:text-sm mb-1">QR</p>
@@ -129,7 +162,7 @@ export default function SealsPage() {
                 </div>
               </div>
 
-              <div className="card">
+              <div className="card hover:scale-105 transition-transform duration-300 animate-fade-in" style={{ animationDelay: '0.4s' }}>
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                   <div>
                     <p className="text-gray-400 text-xs sm:text-sm mb-1">Barcode</p>
@@ -149,8 +182,8 @@ export default function SealsPage() {
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-                {filteredSeals.map((seal) => (
-                  <div key={seal.id} className="card-hover">
+                {filteredSeals.map((seal, index) => (
+                  <div key={seal.id} className="card-hover hover:scale-105 transition-transform duration-300 animate-fade-in" style={{ animationDelay: `${0.5 + index * 0.05}s` }}>
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex items-center space-x-3">
                         {seal.sealType === 'qr' ? (
@@ -196,6 +229,23 @@ export default function SealsPage() {
           </>
         )}
       </div>
+
+      <style jsx>{`
+        @keyframes fade-in {
+          from {
+            opacity: 0;
+            transform: translateY(-10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .animate-fade-in {
+          animation: fade-in 0.6s ease-out both;
+        }
+      `}</style>
     </div>
   );
 }
