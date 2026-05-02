@@ -72,10 +72,14 @@ export async function POST(request: NextRequest) {
       },
       { status: 201 }
     );
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error creating user:', error);
     return NextResponse.json(
-      { error: 'Failed to create user' },
+      { 
+        error: 'Failed to create user',
+        detail: process.env.NODE_ENV !== 'production' ? error?.message : undefined,
+        code: error?.code
+      },
       { status: 500 }
     );
   }
