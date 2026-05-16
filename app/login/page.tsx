@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { Shield, Mail, Lock, AlertCircle, Eye, EyeOff } from 'lucide-react';
+import { Mail, Lock, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
 
 export default function LoginPage() {
@@ -62,8 +62,12 @@ export default function LoginPage() {
       <div className="w-full max-w-md relative z-10">
         {/* Logo/Header with Animation */}
         <div className="text-center mb-8 animate-fade-in">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-primary-600 to-primary-700 rounded-2xl mb-4 shadow-lg shadow-primary-600/50 animate-bounce-slow">
-            <Shield className="w-10 h-10 text-white" />
+          <div className="mb-4">
+            <img
+              src="/Logo-removebg-preview.png"
+              alt="United Seals Logo"
+              className="w-48 h-auto mx-auto"
+            />
           </div>
           <h1 className="text-4xl font-bold text-white mb-2 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
             Seal Tracking
@@ -164,12 +168,7 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* Footer Note */}
-        <div className="mt-6 text-center">
-          <p className="text-gray-500 text-xs">
-            Secure seal tracking system for cotton products
-          </p>
-        </div>
+        {/* Footer Note - removed */}
       </div>
 
       <style jsx>{`
